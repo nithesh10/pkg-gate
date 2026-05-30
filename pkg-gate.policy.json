@@ -1,0 +1,8 @@
+{
+  "minReleaseAgeDays": 7,
+  "blockOnReleaseAgeFail": true,
+  "blockSeverities": ["CRITICAL", "HIGH"],
+  "warnSeverities": ["MEDIUM"],
+  "socketMinScore": 0.3,
+  "scorecardWarnBelow": 5
+}
