@@ -1,0 +1,30 @@
+---
+description: Next.js 15 + Supabase template conventions
+globs: templates/next-supabase/**/*
+alwaysApply: false
+---
+
+# Next.js + Supabase
+
+Default production template. App Router, TypeScript strict, Tailwind.
+
+## Layout
+
+- `src/app/` — routes and API handlers
+- `src/components/` — UI components
+- `src/lib/supabase/` — client, server, middleware helpers
+- `src/lib/services/` — business logic (no direct DB in components)
+- `src/lib/server/` — server-only utilities
+- `supabase/migrations/` — SQL migrations (pgvector-ready)
+
+## Patterns
+
+- AI: `useChat` + route handler in `src/app/api/chat/route.ts` (AI SDK).
+- Auth: Supabase Auth helpers; session in middleware.
+- Data: service modules call Supabase client; components stay thin.
+- Env: `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`.
+
+## Do not
+
+- Experimental RSC generative UI unless explicitly requested.
+- Raw Supabase queries in page components — use services/.

@@ -1,0 +1,31 @@
+---
+description: Security baseline — 7-day package age, 2FA, MCP safety
+globs:
+alwaysApply: false
+---
+
+# Security
+
+## Supply chain
+
+- `.npmrc` enforces `minimum-release-age=7d` in templates.
+- Run `npm audit` in CI; consider Socket.dev for fleet monitoring.
+- Never install packages newer than 7 days without explicit approval and review.
+
+## Credentials
+
+- Authenticator app 2FA on GitHub, npm, Supabase, Convex, Vercel.
+- 1Password for secrets; family passphrase for recovery.
+- Never commit `.env`, tokens, or service role keys.
+
+## MCP safety
+
+- Default: Context7, Ref, DeepWiki, GitHub (read-only PAT), Brave Search (HTTP).
+- On-demand only: Firecrawl, Postgres, Sentry, memory servers.
+- Prefer HTTP/SSE MCPs; containerize stdio for risky servers (see `playbooks/mcp-setup.md`).
+- **No Sequential Thinking MCP.**
+
+## Review
+
+- Run security-review skill on every PR diff before merge.
+- See `playbooks/security-checklist.md` for breach response.

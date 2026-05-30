@@ -1,0 +1,13 @@
+---
+description: Generated Next.js + Supabase project defaults
+alwaysApply: true
+---
+
+# Template defaults (Next.js + Supabase)
+
+- Default production stack for NK-generated apps.
+- Auth: Supabase magic link / OAuth via `/login` and `/auth/callback`; middleware refreshes session.
+- Data: `src/lib/services/` only — no raw Supabase in page components.
+- AI: AI SDK UI (`useChat`); validate `OPENAI_API_KEY` before streaming.
+- Migrations: apply `supabase/migrations/` on a fresh project; `profiles` uses RLS.
+- Do not add experimental RSC generative UI unless explicitly requested.

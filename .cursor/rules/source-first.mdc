@@ -1,0 +1,30 @@
+---
+description: Source-first — inspect local repos/github.com mirrors before external API docs
+globs:
+alwaysApply: false
+---
+
+# Source-First
+
+Before using an external API or library pattern:
+
+1. Check `repos/github.com/<owner>/<repo>` for a local mirror.
+2. If missing, run `node scripts/opensource.mjs <url>` or `node scripts/sync-sources.mjs`.
+3. Read the actual source — types, tests, examples — not docs alone.
+4. For huge monorepos, use Repomix or yek (see `playbooks/workflow.md`).
+
+## Context dumps
+
+```bash
+npx repomix --output context.txt          # normal repos
+npx yek --dirs src --output context.txt   # huge monorepos
+```
+
+## Reference projects
+
+For features modeled on a production app, index and read Graphify first:
+
+```bash
+node scripts/index-reference.mjs <name>
+# Read references/<name>/.graphify/GRAPH_REPORT.md
+```

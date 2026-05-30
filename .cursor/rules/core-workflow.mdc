@@ -1,0 +1,27 @@
+---
+description: Core hybrid workflow — Cursor + Claude Code CLI, top-tier models, minimal PRs, new sessions
+alwaysApply: true
+---
+
+# Core Workflow
+
+- **Cursor** = IDE harness; **Claude Code CLI** = terminal harness.
+- Use highest-tier model variants (Opus/Sonnet thinking, GPT extra-high) for planning and review.
+- Start **new sessions** instead of compacting long context.
+- Keep PRs **minimal** — one concern per PR when possible.
+- Plan before build; read Graphify reports for reference-modeled features.
+- After each feature: code-structure pass → security-review → Greptile/CodeRabbit loop.
+
+## Commands
+
+```bash
+node scripts/sync-sources.mjs
+node scripts/index-reference.mjs <name>
+node scripts/new-project.mjs <name> [template]
+```
+
+## Do not
+
+- Broad refactors in feature PRs.
+- Install packages newer than 7 days without explicit approval.
+- Add high-risk MCPs (filesystem, postgres, memory) by default.

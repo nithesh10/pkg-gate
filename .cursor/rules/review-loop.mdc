@@ -1,0 +1,33 @@
+---
+description: Greptile + CodeRabbit + Bugbot review loop
+globs:
+alwaysApply: false
+---
+
+# Review Loop
+
+Run Greptile and CodeRabbit **in parallel** after each PR. Fix real issues once.
+
+## Greptile
+
+1. Install greptileai/skills: `npx skills add greptileai/skills`
+2. Trigger review via `/greploop` or greploop skill.
+3. Read comments and confidence scores.
+4. Fix, push, repeat until 5/5 or max 5 iterations.
+
+## CodeRabbit
+
+1. Enable CodeRabbit on the GitHub repo.
+2. Use coderabbit-loop skill for parallel independent review.
+3. Address actionable findings; skip stylistic noise.
+
+## Dedupe
+
+See `playbooks/review-dedupe.md`:
+- Fix each real bug once regardless of which reviewer found it.
+- Do not chase contradictory opinions.
+- Prefer Greptile for architecture; CodeRabbit for edge cases.
+
+## Bugbot
+
+After human/agent fixes, use Cursor Bugbot Autofix for remaining autofixable items.
