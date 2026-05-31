@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { isSupabaseConfigured } from "@/lib/supabase/env";
 import {
   deleteWatchedPackage,
   listWatchedPackages,
@@ -31,10 +32,7 @@ function authRequired() {
 }
 
 export async function GET() {
-  if (
-    !process.env.NEXT_PUBLIC_SUPABASE_URL ||
-    !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-  ) {
+  if (!isSupabaseConfigured()) {
     return supabaseConfigError();
   }
 
@@ -53,10 +51,7 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
-  if (
-    !process.env.NEXT_PUBLIC_SUPABASE_URL ||
-    !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-  ) {
+  if (!isSupabaseConfigured()) {
     return supabaseConfigError();
   }
 
@@ -104,10 +99,7 @@ export async function POST(request: Request) {
 }
 
 export async function DELETE(request: Request) {
-  if (
-    !process.env.NEXT_PUBLIC_SUPABASE_URL ||
-    !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-  ) {
+  if (!isSupabaseConfigured()) {
     return supabaseConfigError();
   }
 

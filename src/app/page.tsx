@@ -1,12 +1,10 @@
 import { PkgGate } from "@/components/pkg-gate";
 import { createClient } from "@/lib/supabase/server";
+import { isSupabaseConfigured } from "@/lib/supabase/env";
 import { listWatchedPackages } from "@/lib/services/watched-packages";
 
 export default async function Home() {
-  const supabaseConfigured = Boolean(
-    process.env.NEXT_PUBLIC_SUPABASE_URL &&
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-  );
+  const supabaseConfigured = isSupabaseConfigured();
 
   let initialWatched: Awaited<ReturnType<typeof listWatchedPackages>> = [];
 
