@@ -32,6 +32,10 @@ function baseSignals(overrides: Partial<SafetySignals> = {}): SafetySignals {
       status: "skipped",
       reason: "SOCKET_API_TOKEN not set",
     },
+    scorecard: {
+      status: "skipped",
+      message: "No GitHub project link",
+    },
     ...overrides,
   };
 }

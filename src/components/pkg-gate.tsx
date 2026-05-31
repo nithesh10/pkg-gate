@@ -117,8 +117,8 @@ export function PkgGate({ initialWatched, supabaseConfigured }: Props) {
         <CardHeader>
           <CardTitle>Check package safety</CardTitle>
           <CardDescription>
-            Multi-signal check: 7-day release age, OSV CVEs, npm advisories,
-            deps.dev licenses, and provenance.
+            Multi-signal check: 7-day release age, OSV, npm advisories, deps.dev,
+            provenance, Scorecard, and Socket. Sign in to save to watchlist.
           </CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col gap-4">

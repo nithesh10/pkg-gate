@@ -102,7 +102,14 @@ function signalDetails(signals: SafetySignals): {
       detail:
         signals.socket.reason ??
         signals.socket.message ??
-        "Not configured",
+        (signals.socket.score !== undefined
+          ? `Score ${signals.socket.score.toFixed(2)}`
+          : "Not configured"),
+    },
+    {
+      title: "OpenSSF Scorecard",
+      status: signals.scorecard.status,
+      detail: signals.scorecard.message ?? "Not available",
     },
   ];
 }

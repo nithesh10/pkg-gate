@@ -1,6 +1,6 @@
 import { aggregateSafetyReport } from "./safety/aggregator";
 import { loadSafetyPolicy } from "./safety/policy";
-import type { SafetyReport, SafetySignals, SocketSignal } from "./safety/types";
+import type { SafetyReport, SafetySignals } from "./safety/types";
 import { getCachedReport, setCachedReport } from "./check-cache";
 import { fetchDepsDevVersion } from "./providers/deps-dev";
 import { fetchNpmBulkAdvisories } from "./providers/npm-advisories";
@@ -9,22 +9,10 @@ import {
   NpmRegistryError,
 } from "./providers/npm-registry";
 import { queryOsv } from "./providers/osv";
+import { fetchScorecard } from "./providers/scorecard";
+import { fetchSocketScore } from "./providers/socket";
 
 const PROVIDER_TIMEOUT_MS = 8000;
-
-function skippedSocketSignal(): SocketSignal {
-  if (process.env.SOCKET_API_TOKEN) {
-    return {
-      status: "skipped",
-      reason: "Socket integration planned for Phase 2",
-      message: "SOCKET_API_TOKEN is set but Phase 2 provider not wired yet",
-    };
-  }
-  return {
-    status: "skipped",
-    reason: "SOCKET_API_TOKEN not set",
-  };
-}
 
 async function withTimeout<T>(
   promise: Promise<T>,
@@ -35,7 +23,8 @@ async function withTimeout<T>(
       promise,
       new Promise<{ error: string }>((resolve) =>
         setTimeout(
-          () => resolve({ error: `${label} timed out after ${PROVIDER_TIMEOUT_MS}ms` }),
+          () =>
+            resolve({ error: `${label} timed out after ${PROVIDER_TIMEOUT_MS}ms` }),
           PROVIDER_TIMEOUT_MS
         )
       ),
@@ -59,20 +48,25 @@ export async function runSafetyCheck(
     policy.minReleaseAgeDays
   );
 
-  const cached = getCachedReport(npmMeta.name, npmMeta.version);
+  const cached = await getCachedReport(npmMeta.name, npmMeta.version);
   if (cached) return cached;
 
-  const [osvResult, npmAuditResult, depsDevResult] = await Promise.all([
-    withTimeout(queryOsv(npmMeta.name, npmMeta.version), "OSV"),
-    withTimeout(
-      fetchNpmBulkAdvisories(npmMeta.name, npmMeta.version),
-      "npm advisories"
-    ),
-    withTimeout(
-      fetchDepsDevVersion(npmMeta.name, npmMeta.version),
-      "deps.dev"
-    ),
-  ]);
+  const [osvResult, npmAuditResult, depsDevResult, socketResult] =
+    await Promise.all([
+      withTimeout(queryOsv(npmMeta.name, npmMeta.version), "OSV"),
+      withTimeout(
+        fetchNpmBulkAdvisories(npmMeta.name, npmMeta.version),
+        "npm advisories"
+      ),
+      withTimeout(
+        fetchDepsDevVersion(npmMeta.name, npmMeta.version),
+        "deps.dev"
+      ),
+      withTimeout(
+        fetchSocketScore(npmMeta.name, npmMeta.version),
+        "Socket.dev"
+      ),
+    ]);
 
   const osv =
     "error" in osvResult
@@ -104,13 +98,24 @@ export async function runSafetyCheck(
         }
       : depsDevResult;
 
+  const socket =
+    "error" in socketResult
+      ? {
+          status: "error" as const,
+          message: socketResult.error,
+        }
+      : socketResult;
+
+  const scorecard = await fetchScorecard(deps_dev.project);
+
   const signals: SafetySignals = {
     release_age: npmMeta.releaseAge,
     osv,
     npm_audit,
     deps_dev,
     provenance: npmMeta.provenance,
-    socket: skippedSocketSignal(),
+    socket,
+    scorecard,
   };
 
   const report = aggregateSafetyReport({
@@ -120,7 +125,7 @@ export async function runSafetyCheck(
     policy,
   });
 
-  setCachedReport(report);
+  await setCachedReport(report);
   return report;
 }
 

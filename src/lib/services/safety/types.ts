@@ -60,6 +60,12 @@ export interface SocketSignal {
   message?: string;
 }
 
+export interface ScorecardSignal {
+  status: SignalStatus;
+  score?: number;
+  message?: string;
+}
+
 export interface SafetySignals {
   release_age: ReleaseAgeSignal;
   osv: OsvSignal;
@@ -67,6 +73,7 @@ export interface SafetySignals {
   deps_dev: DepsDevSignal;
   provenance: ProvenanceSignal;
   socket: SocketSignal;
+  scorecard: ScorecardSignal;
 }
 
 export interface SafetyReport {

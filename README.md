@@ -2,7 +2,7 @@
 
 Multi-signal npm package safety checker aligned with the NK workspace 7-day release-age policy.
 
-## Signals (Phase 1)
+## Signals
 
 | Signal | Source | Key required |
 |--------|--------|--------------|
@@ -11,12 +11,13 @@ Multi-signal npm package safety checker aligned with the NK workspace 7-day rele
 | npm advisories | registry bulk API | No |
 | Licenses / project | deps.dev v3 | No |
 | Provenance | npm `dist.attestations` | No |
-| Behavioral | Socket.dev | Phase 2 (`SOCKET_API_TOKEN`) |
+| OpenSSF Scorecard | scorecard.dev API | No |
+| Behavioral | Socket.dev | Optional (`SOCKET_API_TOKEN`) |
 
 ## Verdicts
 
 - **Green** — safe to install under current policy
-- **Yellow** — review recommended (medium CVEs, missing provenance, etc.)
+- **Yellow** — review recommended (medium CVEs, missing provenance, low scorecard, etc.)
 - **Red / Blocked** — release age &lt; 7 days or high/critical CVEs
 
 Policy thresholds: [`pkg-gate.policy.json`](pkg-gate.policy.json)
@@ -30,7 +31,9 @@ npm install
 npm run dev
 ```
 
-Apply Supabase migrations in `supabase/migrations/` for watchlist persistence (optional).
+Apply Supabase migrations in `supabase/migrations/` (watchlist + cache + auth RLS).
+
+Sign in at `/login` to save packages to your watchlist.
 
 ## API
 
@@ -41,13 +44,25 @@ GET /api/check?name=lodash&version=4.17.21
 
 Returns `SafetyReport` JSON with `verdict`, `blocked`, `blockedReasons`, and `signals`.
 
+### Watchlist refresh (cron)
+
+```http
+GET /api/cron/refresh-watchlist
+Authorization: Bearer <CRON_SECRET>
+```
+
+Set `CRON_SECRET` in env. Vercel cron is configured in `vercel.json` (daily 06:00 UTC).
+
 ## Scripts
 
 ```powershell
 npm run typecheck
+$env:NODE_OPTIONS="--max-old-space-size=4096"
 npm run test
 npm run build
 ```
+
+On Windows, Vitest may need extra heap (`NODE_OPTIONS` above). CI sets this automatically.
 
 ## When not to use
 
