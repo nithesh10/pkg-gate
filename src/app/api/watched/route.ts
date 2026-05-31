@@ -18,6 +18,18 @@ function supabaseConfigError() {
   );
 }
 
+function authRequired() {
+  return Response.json(
+    {
+      error: {
+        code: "AUTH_REQUIRED",
+        message: "Sign in to manage your watchlist.",
+      },
+    },
+    { status: 401 }
+  );
+}
+
 export async function GET() {
   if (
     !process.env.NEXT_PUBLIC_SUPABASE_URL ||
@@ -74,7 +86,12 @@ export async function POST(request: Request) {
 
   try {
     const supabase = await createClient();
-    const saved = await saveWatchedPackage(supabase, payload.report);
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) return authRequired();
+
+    const saved = await saveWatchedPackage(supabase, payload.report, user.id);
     return Response.json({ package: saved });
   } catch (error) {
     const message =
@@ -105,6 +122,11 @@ export async function DELETE(request: Request) {
 
   try {
     const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) return authRequired();
+
     await deleteWatchedPackage(supabase, id);
     return Response.json({ ok: true });
   } catch (error) {

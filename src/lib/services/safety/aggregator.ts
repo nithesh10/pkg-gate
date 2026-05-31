@@ -101,7 +101,8 @@ export function aggregateSafetyReport(input: AggregateInput): SafetyReport {
     signals.npm_audit.status === "warn" ||
     signals.deps_dev.status === "warn" ||
     signals.provenance.status === "warn" ||
-    signals.socket.status === "warn"
+    signals.socket.status === "warn" ||
+    signals.scorecard.status === "warn"
   ) {
     verdict = "yellow";
   }
